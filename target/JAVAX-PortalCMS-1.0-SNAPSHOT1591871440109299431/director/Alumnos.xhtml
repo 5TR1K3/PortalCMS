@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html
+        PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:c="http://java.sun.com/jsp/jstl/core">
+<h:head>
+    <title>Login</title>
+    <h:outputStylesheet name="css/bootstrap.min.css" />
+    <h:outputStylesheet name="css/alertify.core.css" />
+    <h:outputStylesheet name="css/alertify.default.css" />
+    <h:outputScript name="js/alertify.js"/>
+</h:head>
+<h:body>
+    <div class="container mt-5">
+        <h2>Bienvenido/a #{sessionScope.usuario.nombres}, a la interfaz de director</h2>
+        <h:form styleClass="container">
+            <h:selectOneMenu value="#{alumnoBean.dato}" id="filtroSalon" styleClass="form-control" >
+                <f:selectItem itemLabel="Buscar por Salon" itemValue=""/>
+                <f:selectItems value="#{salonBean.listaSalones}" var="s" itemLabel='#{s.grado} "#{s.seccion}"' itemValue="#{s}"/>
+                <f:ajax render="alumnosTable" />
+            </h:selectOneMenu>
+
+            <h:inputText value="#{alumnoBean.dato}" id="filtro" styleClass="form-control">
+                <f:ajax render="alumnosTable" />
+            </h:inputText>
+        </h:form>
+        <h:dataTable id="alumnosTable" value="#{alumnoBean.listaAlumnos}" var="a" styleClass="table table-striped">
+            <h:column>
+                <f:facet name="header">
+                    Codigo
+                </f:facet>
+                #{a.codigoAlumno}
+            </h:column>
+            <h:column>
+                <f:facet name="header">
+                    Apellidos
+                </f:facet>
+                #{a.apellidos}
+            </h:column>
+            <h:column>
+                <f:facet name="header">
+                    Nombres
+                </f:facet>
+                #{a.nombres}
+            </h:column>
+            <h:column>
+                <f:facet name="header">
+                    Salón
+                </f:facet>
+                #{a.salonByCodigoSalon.grado} "#{a.salonByCodigoSalon.seccion}"
+            </h:column>
+            <h:column>
+                <f:facet name="header">
+                    Contacto
+                </f:facet>
+                #{a.telefono}
+            </h:column>
+            <h:column>
+                <f:facet name="header">
+                    Contraseña
+                </f:facet>
+                #{a.contra}
+            </h:column>
+            <h:column>
+                <f:facet name="header">
+                    Operaciones
+                </f:facet>
+                #{a.contra}
+            </h:column>
+        </h:dataTable>
+    </div>
+    <h:outputScript>
+        <c:if test = "#{not empty flash.exito}" >
+            alertify.success('#{flash.exito}');
+        </c:if>
+
+        //Verificación de sesión
+        <c:if test = "#{not empty sessionScope.rol}" >
+            var rol = "#{sessionScope.rol}";
+            if (rol === 'Maestro') {
+            window.location.href = '../maestro/interfazMaestro.xhtml';
+            } else if (rol === 'Alumno') {
+            window.location.href = '../alumno/interfazAlumno.xhtml';
+            }
+        </c:if>
+        <c:if test = "#{empty sessionScope.rol}" >
+            window.location.href = '../login.xhtml';
+        </c:if>
+    </h:outputScript>
+</h:body>
+
+</html>

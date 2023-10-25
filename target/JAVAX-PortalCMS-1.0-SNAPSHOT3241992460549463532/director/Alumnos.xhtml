@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html
+        PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:b="http://bootsfaces.net/ui"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:c="http://java.sun.com/jsp/jstl/core">
+<h:head>
+    <title>Gestor de Alumnos</title>
+    <h:outputStylesheet name="css/bootstrap.min.css" />
+    <h:outputStylesheet name="css/alertify.core.css" />
+    <h:outputStylesheet name="css/alertify.default.css" />
+    <h:outputScript name="js/alertify.js"/>
+    <h:outputStylesheet>
+        .custom-width {
+            width: 100px; /* Establece el ancho que desees */
+        }
+    </h:outputStylesheet>
+</h:head>
+<h:body>
+    <div class="container mt-5">
+        <h2>Gestor de alumnos</h2>
+        <h:form styleClass="col-6">
+            <b:button onclick="$('.alumnoNuevo').modal('show')" value="Matricular alumno" styleClass="btn-primary" />
+            <!--<h:inputText value="#{alumnoBean.dato}" id="filtro" styleClass="form-control custom-width">
+                <f:ajax render="alumnosTable" />
+            </h:inputText>-->
+        </h:form>
+        <b:dataTable widgetVar="alumnosTable" value="#{alumnoBean.listaAlumnos}" var="a" styleClass="table table-striped" responsive="true">
+            <b:dataTableColumn value="#{a.codigoAlumno}"/>
+            <b:dataTableColumn value="#{a.apellidos}"/>
+            <b:dataTableColumn value="#{a.nombres}"/>
+            <b:column label="Salón" >
+                <h:outputText value='#{a.salonByCodigoSalon.grado} "#{a.salonByCodigoSalon.seccion}"'/>
+            </b:column>
+            <b:dataTableColumn value="#{a.telefono}"/>
+            <b:dataTableColumn value="#{a.contra}"/>
+
+            <b:column label="Operaciones">
+                <h:form>
+                    <h:commandButton value="Actualizar" styleClass="btn-info"  style="margin-right:10px"/>
+                    <h:commandButton value="Eliminar" styleClass="btn-danger" />
+                </h:form>
+            </b:column>
+        </b:dataTable>
+
+        <b:modal title="Matricular Alumno" styleClass="alumnoNuevo"
+                 closable="true"
+                 closeOnEscape="false">
+            <b:form>
+                <p>Please enter a number between 1 and 99.</p>
+                <b:inputText value="42"
+                             label="Tage"
+                             required="true"
+                             requiredMessage="Please enter a number"
+                             large-screen="two-thirds">
+                    <f:convertNumber integerOnly="true"/>
+                    <f:validateLongRange minimum="1" maximum="99"/>
+                </b:inputText>
+                <b:row>
+                    <b:column>
+                        <b:button largeScreen="half"  value="Cancel"
+                                  dismiss="modal" onclick="return false;"/>
+                        <b:commandButton largeScreen="half" update="@form"
+                                         dismiss="modal"
+                                         value="Save" look="success"
+                                         oncomplete="if(!validationFailed) { $('.formValidationModalClass').modal('hide') } "/>
+                    </b:column>
+                </b:row>
+                <b:fetchBeanInfos />
+                <b:messages />
+            </b:form>
+        </b:modal>
+    </div>
+    <h:outputScript>
+        <c:if test = "#{not empty flash.exito}" >
+            alertify.success('#{flash.exito}');
+        </c:if>
+
+        //Verificación de sesión
+        <c:if test = "#{not empty sessionScope.rol}" >
+            var rol = "#{sessionScope.rol}";
+            if (rol === 'Maestro') {
+                window.location.href = '../maestro/interfazMaestro.xhtml';
+            } else if (rol === 'Alumno') {
+                window.location.href = '../alumno/interfazAlumno.xhtml';
+            }
+        </c:if>
+        <c:if test = "#{empty sessionScope.rol}" >
+            window.location.href = '../login.xhtml';
+        </c:if>
+    </h:outputScript>
+</h:body>
+
+</html>

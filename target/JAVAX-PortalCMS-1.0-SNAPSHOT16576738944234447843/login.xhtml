@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html
+        PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:c="http://java.sun.com/jsp/jstl/core">
+<h:head>
+    <title>Login</title>
+    <h:outputStylesheet name="css/bootstrap.min.css" />
+    <h:outputStylesheet name="css/alertify.core.css" />
+    <h:outputStylesheet name="css/alertify.default.css" />
+    <h:outputScript name="js/alertify.js"/>
+</h:head>
+<h:body>
+    <div class="container mt-5">
+        <h2>Iniciar Sesión</h2>
+        <h:form id="login">
+            <h:panelGroup layout="block" styleClass="alert alert-danger"
+                          rendered="#{not empty facesContext.messageList}">
+                <h:messages />
+            </h:panelGroup>
+            <h:panelGrid columns="2" styleClass="table">
+                <h:outputLabel for="codigo" value="Codigo:" />
+                <h:inputText id="codigo" value="#{loginBean.codigo}" class="form-control" required="true" requiredMessage="Debes ingresar el usuario" placeholder="Ingresa tu usuario" />
+
+                <h:outputLabel for="contra" value="Contraseña:" />
+                <h:inputSecret id="contra" value="#{loginBean.contra}" class="form-control" required="true" requiredMessage="Debes ingresar la contraseña" placeholder="Ingresa tu contraseña" />
+
+                <h:commandButton value="Iniciar Sesión" action="#{loginBean.login}" styleClass="btn btn-primary" />
+            </h:panelGrid>
+        </h:form>
+    </div>
+    <h:outputScript>
+        <c:if test = "#{not empty flash.exito}" >
+            alertify.success('#{flash.exito}');
+        </c:if>
+    </h:outputScript>
+</h:body>
+
+</html>

@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html
+        PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:b="http://bootsfaces.net/ui"
+      xmlns:c="http://java.sun.com/jsp/jstl/core">
+<h:head>
+    <title>Gestor de Alumnos</title>
+    <h:outputStylesheet name="css/bootstrap.min.css" />
+    <h:outputStylesheet name="css/alertify.core.css" />
+    <h:outputStylesheet name="css/alertify.default.css" />
+    <h:outputScript name="js/alertify.js"/>
+    <h:outputStylesheet>
+        .custom-width {
+            width: 100px; /* Establece el ancho que desees */
+        }
+    </h:outputStylesheet>
+</h:head>
+<h:body>
+    <div class="container mt-5">
+        <h2>Gestor de alumnos</h2>
+        <b:form>
+            <h:panelGroup layout="block" styleClass="alert alert-danger" rendered="#{not empty facesContext.messageList}">
+                <h:messages />
+            </h:panelGroup>
+
+            <h:outputLabel for="nombre" value="Nombres:"/>
+            <h:inputText id="nombre" styleClass="form-control" value="#{alumnoBean.alumno.nombres}"
+                         required="true" requiredMessage="Debes ingresar el nombre"/>
+
+            <h:outputLabel for="apellidos" value="Apellidos:"/>
+            <h:inputText id="apellidos" styleClass="form-control" value="#{alumnoBean.alumno.apellidos}"
+                         required="true" requiredMessage="Debes ingresar el apellido"/>
+
+            <h:outputLabel for="salon" value="Salón"/>
+            <h:selectOneMenu id="salon" value="#{alumnoBean.codigoSalon}" styleClass="form-control">
+                <f:selectItems value="#{salonBean.listaSalones}" var="s" itemValue="#{s.codigoSalon}" itemLabel='#{s.grado} "#{s.seccion}"'/>
+            </h:selectOneMenu>
+
+            <h:outputLabel for="contacto" value="Telefono:"/>
+            <h:inputText id="contacto" styleClass="form-control" value="#{alumnoBean.alumno.telefono}"
+                         required="true" requiredMessage="Debes ingresar el telefono"/>
+            <div class="mt-5">
+                <h:commandButton value="Guardar" styleClass="btn btn-success" action="#{alumnoBean.guardarAlumno}" />
+            </div>
+        </b:form>
+
+        <b:dataTable widgetVar="alumnosTable" value="#{alumnoBean.listaAlumnos}" var="a" styleClass="table table-striped mt-5">
+            <b:dataTableColumn value="#{a.codigoAlumno}"/>
+            <b:dataTableColumn value="#{a.apellidos}"/>
+            <b:dataTableColumn value="#{a.nombres}"/>
+            <b:column label="Salón" >
+                <h:outputText value='#{a.salonByCodigoSalon.grado} "#{a.salonByCodigoSalon.seccion}"'/>
+            </b:column>
+            <b:dataTableColumn value="#{a.telefono}"/>
+            <b:dataTableColumn value="#{a.contra}"/>
+
+            <b:column label="Operaciones">
+                <h:form>
+                    <h:commandButton value="Actualizar" styleClass="btn btn-info" action="#{alumnoBean.obtenerAlumno}" style="margin-right:10px">
+                        <f:param name="codigo" value="#{a.codigoAlumno}" />
+                    </h:commandButton>
+                    <h:commandButton value="Eliminar" styleClass="btn btn-danger" action="#{alumnoBean.eliminarAlumno()}">
+                        <f:param name="codigo" value="#{a.codigoAlumno}" />
+                    </h:commandButton>
+                </h:form>
+            </b:column>
+        </b:dataTable>
+        <h:dataTable value="#{alumnoBean.listaAlumnos}" var="a" styleClass="table table-striped mt-5">
+            <h:column>
+                <f:facet name="header">
+                    Apellidos
+                </f:facet>
+                #{a.apellidos}
+            </h:column>
+            <h:column>
+                <f:facet name="header">
+                    Nombres
+                </f:facet>
+                #{a.nombres}
+            </h:column>
+            <h:column>
+                <f:facet name="header">
+                    Salón
+                </f:facet>
+                #{a.salonByCodigoSalon.grado} "#{a.salonByCodigoSalon.seccion}"
+            </h:column>
+            <h:column>
+                <f:facet name="header">
+                    Contacto
+                </f:facet>
+                #{a.telefono}
+            </h:column>
+            <h:column>
+                <f:facet name="header">
+                    Contraseña
+                </f:facet>
+                #{a.contra}
+            </h:column>
+            <h:column>
+                <f:facet name="header">
+                    Operaciones
+                </f:facet>
+                <h:form>
+                    <h:commandButton value="Actualizar" styleClass="btn btn-info" action="#{alumnoBean.obtenerAlumno}" style="margin-right:10px">
+                        <f:param name="codigo" value="#{a.codigoAlumno}" />
+                    </h:commandButton>
+                    <h:commandButton value="Eliminar" styleClass="btn btn-danger" action="#{alumnoBean.eliminarAlumno()}">
+                        <f:param name="codigo" value="#{a.codigoAlumno}" />
+                    </h:commandButton>
+                </h:form>
+            </h:column>
+
+        </h:dataTable>
+    </div>
+    <h:outputScript>
+        <c:if test = "#{not empty flash.exito}" >
+            alertify.success('#{flash.exito}');
+        </c:if>
+
+        function confirmarEliminacion(){
+            return confirm("¿Está seguro que desea eliminar este alumno");
+        }
+    </h:outputScript>
+    <c:choose>
+        <c:when test="#{not empty sessionScope.rol}">
+            <c:set var="rol" value="#{sessionScope.rol}" />
+            <c:choose>
+                <c:when test="#{rol eq 'Maestro'}">
+                    <h:outputScript>
+                        window.location.href = '../maestro/interfazMaestro.xhtml';
+                    </h:outputScript>
+                </c:when>
+                <c:when test="#{rol eq 'Alumno'}">
+                    <h:outputScript>
+                        window.location.href = '../alumno/interfazAlumno.xhtml';
+                    </h:outputScript>
+                </c:when>
+            </c:choose>
+        </c:when>
+        <c:otherwise>
+            <h:outputScript>
+                window.location.href = '../login.xhtml';
+            </h:outputScript>
+        </c:otherwise>
+    </c:choose>
+</h:body>
+
+</html>
